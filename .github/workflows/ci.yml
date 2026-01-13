@@ -14,18 +14,9 @@ jobs:
         php-versions: ['8.3', '8.4']
         magento: ['2.4.7', '2.4.8']
         coveralls: [ true ]
-        include:
-          - operating-system: 'ubuntu-latest'
-            php-versions: '8.3'
-            magento: '2.4.7'
-            coveralls: false
-          - operating-system: 'ubuntu-latest'
-            php-versions: '8.3'
-            magento: '2.4.8'
-            coveralls: false
-          - operating-system: 'ubuntu-latest'
-            php-versions: '8.4'
-            magento: '2.4.8'
+        exclude:
+          -  php-versions: '8.4'
+             magento: '2.4.7'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -38,9 +29,6 @@ jobs:
           coverage: xdebug
           extensions: bcmath, gd
 
-      - name: Install Composer dependencies
-        run: composer install
-
       - name: Install Magento 2.4.7
         if: matrix.magento == '2.4.7'
         run: |
@@ -52,7 +40,10 @@ jobs:
         run: |
           composer remove --no-update magento/framework magento/module-backend magento/module-customer magento/module-store magento/module-ui
           composer require magento/framework:103.0.8 magento/module-backend:102.0.8 magento/module-customer:103.0.8 magento/module-store:101.1.8 magento/module-ui:101.2.8
-
+      
+      - name: Install Composer dependencies
+        run: composer install
+          
       - name: Codesniffer
         run: composer cs-check
 
